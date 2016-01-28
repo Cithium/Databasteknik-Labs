@@ -75,9 +75,41 @@ where pNbr = (select pNbr                                 # uppgift l, average a
 from students
 where firstName = 'Eva' and lastName = 'Alm');
 
-select firstName, lastName
+select firstName, lastName 
+from students                                  # Uppgift m
+where pNbr not in (select pNbr from takencourses);    
+
+drop view avgGrades;                       # Uppgift n
+
+create view avgGrades (peNbr, avgGrade) as
+select pNbr, avg(grade)                        # Uppgift n
+from takencourses
+group by pNbr
+order by avg(grade) desc;
+
+select peNbr,avgGrade                                # Uppgift n
+from avgGrades
+where avgGrade = (select max(avgGrade) from avgGrades);
+
+select students.pNbr, sum(credits)
+from (students left outer join takencourses on students.pNbr = takencourses.pNbr)
+left outer join courses on takencourses.courseCode = courses.courseCode
+group by students.pNbr;
+
+select students.firstName, students.lastName, sum(credits)
+from (students left outer join takencourses on students.pNbr = takencourses.pNbr)
+left outer join courses on takencourses.courseCode = courses.courseCode
+group by students.pNbr;
+
+select *
 from students
-where pNbr not in (select pNbr from takencourses);
+where (firstName, lastName) in
+(select firstName, lastName
+from students
+group by firstName, lastName             # Uppgift q
+having count(*) > 1);  
+
+
 
 
 
